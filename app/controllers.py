@@ -32,7 +32,7 @@ async def get_all_scripts() -> [Script]:
 async def script_runner(script: Script) -> Script | InvalidScriptException:
     # Selector primitivo para el runner de tus scripts
     if script.name.endswith('py'):
-        print("running python"+script.name)
+        print("running python")
         subprocess.run(["python3", script.name])
         return script
     elif script.name.endswith('js'):
