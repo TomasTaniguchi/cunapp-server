@@ -7,7 +7,9 @@ import subprocess
 MOCK_DATA = [Script(id=1, name="hello.sh", description="Hello from Bash script", started_at=datetime.now(), last_time_run=datetime.now()),
              Script(id=2, name="hello.py",
                     description="Hello from python script", started_at=datetime.now(), last_time_run=datetime.now()),
-             Script(id=3, name="hello.js", description="Hello from JS script", started_at=datetime.now(), last_time_run=datetime.now())]
+             Script(id=3, name="hello.js", description="Hello from JS script",
+                    started_at=datetime.now(), last_time_run=datetime.now()),
+             Script(id=4, name="anormal.js", description="Ejecutando a anormales", started_at=datetime.now(), last_time_run=datetime.now())]
 
 # Esto no va aca, podes ponerlo en un common file
 
@@ -15,6 +17,12 @@ MOCK_DATA = [Script(id=1, name="hello.sh", description="Hello from Bash script",
 class InvalidScriptException(Exception):
     'Not matching script found'
     pass
+
+
+def runntime_selector(script):
+    def ext_checker(ext, runner):
+        return subprocess.run([runner, script.name], check=True) if script.name.endswith(ext) else None
+    return ext_checker
 
 
 async def get_script(script_id: int) -> Script:
@@ -29,20 +37,9 @@ async def get_all_scripts() -> [Script]:
     # Pero como es un mock no lo hago
 
 
-async def script_runner(script: Script) -> Script | InvalidScriptException:
-    # Selector primitivo para el runner de tus scripts
-    if script.name.endswith('py'):
-        print("running python")
-        subprocess.run(["python3", script.name])
-        return script
-    elif script.name.endswith('js'):
-        print("Running javascript script")
-        # Aca podes usas el runtime que quieras, node, deno, bun, etc
-        subprocess.run(["node", script.name])
-        return script
-    elif script.name.endswith('sh') or script.name.endswith('bash'):
-        print("Running bash script")
-        subprocess.run(["bash", script.name])
-        return script
-    else:
-        raise await InvalidScriptException
+async def script_runner(script: Script) -> tuple | None:
+    selector = runntime_selector(script)
+    return tuple(filter(lambda x: x != None, (selector("py", "python3"),
+                                              selector("js", "node"),
+                                              selector("sh", "bash"),
+                                              selector("lua", "lua"))))
