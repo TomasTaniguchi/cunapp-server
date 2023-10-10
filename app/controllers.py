@@ -1,7 +1,7 @@
-from models.script import Script
-from datetime import datetime
+import os
 import subprocess
-
+from datetime import datetime
+from models.script import Script
 
 # Esto debe ser una DB cuña o la forma en la que tengas almacenados tus scripts
 MOCK_DATA = [Script(id=1, name="hello.sh", description="Hello from Bash script", started_at=datetime.now(), last_time_run=datetime.now()),
@@ -19,10 +19,11 @@ class InvalidScriptException(Exception):
     pass
 
 
-def runntime_selector(script):
-    def ext_checker(ext, runner):
-        return subprocess.run([runner, script.name], check=True) if script.name.endswith(ext) else None
+async def runntime_selector(script):
+    async def ext_checker(ext, runner):
+        return subprocess.run([runner, os.path.join('..', 'scripts', script.name)], check=True) if script.name.endswith(ext) else None
     return ext_checker
+# os.path.join(os.chdir('..'), "scripts", script.name)
 
 
 async def get_script(script_id: int) -> Script:
@@ -38,8 +39,8 @@ async def get_all_scripts() -> [Script]:
 
 
 async def script_runner(script: Script) -> tuple | None:
-    selector = runntime_selector(script)
-    return tuple(filter(lambda x: x != None, (selector("py", "python3"),
-                                              selector("js", "node"),
-                                              selector("sh", "bash"),
-                                              selector("lua", "lua"))))
+    selector = await runntime_selector(script)
+    return tuple(filter(lambda x: x != None, (await selector("py", "python3"),
+                                              await selector("js", "node"),
+                                              await selector("sh", "bash"),
+                                              await selector("lua", "lua"))))
