@@ -17,3 +17,4 @@ def script_loader(fn,args: list) -> List[Script]:
     return list(map(fn,args.get('scripts')))
 
 
+print(script_loader(script_generator, ls('../scripts')))

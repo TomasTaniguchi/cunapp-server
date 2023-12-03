@@ -7,10 +7,12 @@ from watchdog.events import LoggingEventHandler, FileSystemEventHandler
 class DirScannerHandler(FileSystemEventHandler):
     
     def on_created(self, event):
-        print(event)
+        print("New script added")
+    def on_deleted(self, event):
+        print("some script deleted")
 
 
-path="asd"
+path="../scripts"
 event_handler = DirScannerHandler()
 observer = Observer()
 observer.schedule(event_handler,path, recursive=False)
