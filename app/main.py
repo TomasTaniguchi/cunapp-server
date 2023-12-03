@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from models.script import Script
 from fastapi.middleware.cors import CORSMiddleware
 from controllers import *
-
-
+from typing import Tuple
+from directory_first_time_scanner import *
 app = FastAPI()
 
 
@@ -27,6 +27,8 @@ async def get_scripts():
 
 
 @app.put("/run/{script_id}")
-async def run_script(script_id: int) -> tuple:
+async def run_script(script_id: str):
     print(script_id)
     return await script_runner(await get_script(script_id))
+
+#MOCK_DATA = script_loader(script_generator, ls('../scripts'))

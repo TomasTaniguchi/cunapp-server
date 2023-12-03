@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class Script(BaseModel):
-    id: int
+    id: str
     name: str
     description: str | None = None
     started_at: datetime

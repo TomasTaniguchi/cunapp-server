@@ -4,12 +4,12 @@ from datetime import datetime
 from models.script import Script
 
 # Esto debe ser una DB cuña o la forma en la que tengas almacenados tus scripts
-MOCK_DATA = [Script(id=1, name="hello.sh", description="Hello from Bash script", started_at=datetime.now(), last_time_run=datetime.now()),
-             Script(id=2, name="hello.py",
+MOCK_DATA = [Script(id="1", name="hello.sh", description="Hello from Bash script", started_at=datetime.now(), last_time_run=datetime.now()),
+             Script(id="2", name="hello.py",
                     description="Hello from python script", started_at=datetime.now(), last_time_run=datetime.now()),
-             Script(id=3, name="hello.js", description="Hello from JS script",
+             Script(id="3", name="hello.js", description="Hello from JS script",
                     started_at=datetime.now(), last_time_run=datetime.now()),
-             Script(id=4, name="anormal.js", description="Ejecutando a anormales", started_at=datetime.now(), last_time_run=datetime.now())]
+             Script(id="4", name="anormal.js", description="Ejecutando a anormales", started_at=datetime.now(), last_time_run=datetime.now())]
 
 # Esto no va aca, podes ponerlo en un common file
 
@@ -19,7 +19,7 @@ class InvalidScriptException(Exception):
     pass
 
 
-async def runntime_selector(script):
+async def runntime_selector(script: Script):
     async def ext_checker(ext, runner):
         return subprocess.run([runner, os.path.join('..', 'scripts', script.name)], check=True) if script.name.endswith(ext) else None
     return ext_checker
